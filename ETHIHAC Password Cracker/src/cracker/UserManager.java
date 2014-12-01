@@ -5,13 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
-
-import crypt.Sha512Crypt;
+import java.util.List;
 
 
 public class UserManager {
@@ -21,21 +17,12 @@ public class UserManager {
 	 * Value: $ hash_algorithm $ salt $ hash
 	 */
 	private HashMap<String, String> shadowCache = new HashMap<>();
-	private Dictionary dictionary;
+	private List<User> users = new ArrayList<>();
 	
-	public UserManager() {
-		dictionary = new Dictionary();
+	
+	UserManager() {
 		readShadowToCache();
 		generateUsers();
-	}
-	
-	
-	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		UserManager um = new UserManager();
-		long end = System.currentTimeMillis();
-		
-		
 	}
 	
 	
@@ -61,7 +48,9 @@ public class UserManager {
 				String[] splitLine = line.split(":");
 				int userid = Integer.valueOf(splitLine[2]);
 				if (userid >= 1000 && userid != 65534) { // 65534 is 'nobody'.
-					getPassword(splitLine[0]);
+					String username = splitLine[0];
+					User user = new User(userid, username, shadowCache.get(username));
+					users.add(user);
 				}
 			}
 		
@@ -70,23 +59,7 @@ public class UserManager {
 	}
 	
 	
-	// TODO clean up printouts
-	private void getPassword(String username) {
-		String encryptedHash = shadowCache.get(username);
-		String[] splitHash = encryptedHash.split("\\$");
-		String encryptedSalt = "$6$" + splitHash[2]; 
-		
-		System.out.println(username);
-		long start = System.currentTimeMillis();
-		for (String entry : dictionary.getEntries()) {
-			String attemptedHash = Sha512Crypt.Sha512_crypt(entry, encryptedSalt, 0);
-			if (encryptedHash.equals(attemptedHash)) {
-				System.out.println(entry);
-				System.out.println(System.currentTimeMillis() - start + " ms");
-				break;
-			}
-		}
-		
-		System.out.println();
+	List<User> getUsers() {
+		return users;
 	}
 }
