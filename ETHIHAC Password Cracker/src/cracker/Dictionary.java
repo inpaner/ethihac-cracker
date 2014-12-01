@@ -1,3 +1,5 @@
+package cracker;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -5,12 +7,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 
 public class Dictionary {
-	File folder = new File("dictionary");
-	HashSet<String> entries = new HashSet<>();
-	ArrayList<String> list = new ArrayList<>(); 
+	private final File folder = new File("dictionary");
+	
+	private HashSet<String> entries = new HashSet<>();
+	private ArrayList<String> list = new ArrayList<>(); 
 	
 	Dictionary() {
 		loadFiles();
@@ -52,6 +56,11 @@ public class Dictionary {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} 
+	}
+	
+	
+	HashSet<String> getEntries() {
+		return entries;
 	}
 	
 }
